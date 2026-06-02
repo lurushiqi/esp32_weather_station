@@ -170,7 +170,7 @@ void WiFiEvent(WiFiEvent_t event) {
   }
 }
 
-// ===================== 网页（完全不动） =====================
+// 
 // ===================== 网页（已修改：WiFi/MQTT同行+放后面+小字） =====================
 void handleRoot() {
   String html = "<!DOCTYPE html>";
@@ -185,17 +185,24 @@ void handleRoot() {
   
   html += "<style>";
   html += "*{margin:0;padding:0;box-sizing:border-box;font-family:'Microsoft YaHei',sans-serif;}";
-  html += "body{background:#f0f7ff;color:#333;}";
-  html += ".container{max-width:500px;margin:30px auto;padding:0 20px;}";
-  html += ".card{background:#fff;border-radius:20px;padding:25px 30px;box-shadow:0 8px 30px rgba(0,80,200,0.08);margin-bottom:20px;}";
-  html += ".ip-bar{background:#2d8aff;color:#fff;padding:10px 18px;border-radius:12px;text-align:center;font-size:15px;margin-bottom:10px;}";
-  html += ".status-bar{text-align:center;font-size:12px;color:#666;margin-bottom:20px;}"; // 小字状态条
-  html += ".title{text-align:center;font-size:26px;font-weight:bold;margin-bottom:25px;color:#2d8aff;}";
-  html += ".item{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid #f0f0f0;}";
-  html += ".item:last-child{border-bottom:none;}";
-  html += ".item-left{display:flex;align-items:center;gap:12px;font-size:18px;}";
-  html += ".item-right{font-size:20px;font-weight:bold;color:#222;}";
-  html += ".icon{font-size:24px;width:30px;text-align:center;}";
+  html += "body{background:#f0f7ff;color:#333;padding:15px 10px;}";
+  html += ".container{max-width:520px;margin:0 auto;}";
+  html += ".card{background:#fff;border-radius:24px;padding:10px 38px;box-shadow:0 6px 26px rgba(45,138,255,0.09);}";
+  html += ".ip-bar{background:#2d8aff;color:#fff;padding:12px 18px;border-radius:14px;text-align:center;font-size:15px;margin-top:28px;}";
+  html += ".status-bar{text-align:center;font-size:12px;color:#666;margin:12px 0 0;}";
+  html += ".title{text-align:center;font-size:28px;font-weight:bold;margin-bottom:20px;color:#2d8aff;letter-spacing:1px;}";
+  html += ".item{padding:16px 0;border-bottom:1px solid #f3f6fc;}";
+  html += ".item:last-child{border-bottom:none;padding-bottom:0;}";
+  html += ".row-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}";
+  html += ".item-left{display:flex;align-items:center;gap:12px;font-size:19px;}";
+  html += ".item-right{font-size:21px;font-weight:bold;color:#222;display:flex;align-items:center;gap:9px;}";
+  html += ".icon{font-size:26px;width:32px;text-align:center;}";
+  html += ".desc{font-size:13px;color:#757983;padding-left:44px;}";
+  html += ".tag{font-size:13px;padding:3px 8px;border-radius:7px;color:#fff;font-weight:normal;white-space:nowrap;}";
+  html += ".tag-excel{background:#00C853;}"; //优/适宜 绿
+  html += ".tag-good{background:#2196F3;}";  //良 蓝
+  html += ".tag-mid{background:#FF9800;}";   //偏高/偏低 橙
+  html += ".tag-bad{background:#F44336;}";   //差 红
   html += ".wifi-online{color:#00C853;font-weight:bold;}";
   html += ".wifi-offline{color:#F44336;font-weight:bold;}";
   html += ".mqtt-online{color:#00C853;font-weight:bold;}";
@@ -208,18 +215,96 @@ void handleRoot() {
 
   html += "<div class='title'>🌤 智能气象监测站</div>";
 
-  html += "<div class='item'><div class='item-left'><span class='icon'>🌡</span><span>温度</span></div><div class='item-right'>" + String(temperature,1) + " ℃</div></div>";
-  html += "<div class='item'><div class='item-left'><span class='icon'>💧</span><span>湿度</span></div><div class='item-right'>" + String(humidity,1) + " %</div></div>";
-  html += "<div class='item'><div class='item-left'><span class='icon'>🍃</span><span>空气质量</span></div><div class='item-right'>" + air_level + "</div></div>";
-  html += "<div class='item'><div class='item-left'><span class='icon'>🫧</span><span>CO₂</span></div><div class='item-right'>" + String(co2) + " ppm</div></div>";
-  html += "<div class='item'><div class='item-left'><span class='icon'>🧪</span><span>TVOC</span></div><div class='item-right'>" + String(tvoc) + " ppb</div></div>";
-  html += "<div class='item'><div class='item-left'><span class='icon'>🌪️</span><span>气压</span></div><div class='item-right'>" + String(pressure,1) + " hPa</div></div>";
-  html += "<div class='item'><div class='item-left'><span class='icon'>⛰️</span><span>海拔</span></div><div class='item-right'>" + String(altitude,1) + " m</div></div>";
+  //温度
+  html += "<div class='item'>";
+  html += "<div class='row-top'>";
+  html += "<div class='item-left'><span class='icon'>🌡</span><span>温度</span></div>";
+  html += "<div class='item-right'>" + String(temperature,1) + " ℃";
+  if(temperature >=18 && temperature <=26) html += "<span class='tag tag-excel'>适宜</span>";
+  else html += "<span class='tag tag-mid'>偏离舒适区</span>";
+  html += "</div></div>";
+  html += "<div class='desc'>舒适参考：18～26℃</div>";
+  html += "</div>";
 
-// IP + 域名
+  //湿度
+  html += "<div class='item'>";
+  html += "<div class='row-top'>";
+  html += "<div class='item-left'><span class='icon'>💧</span><span>湿度</span></div>";
+  html += "<div class='item-right'>" + String(humidity,1) + " %";
+  if(humidity >=40 && humidity <=65){
+    html += "<span class='tag tag-excel'>适宜</span>";
+  }else if(humidity <40){
+    html += "<span class='tag tag-mid'>偏干</span>";
+  }else{
+    html += "<span class='tag tag-mid'>偏湿</span>";
+  }
+  html += "</div></div>";
+  html += "<div class='desc'>舒适参考：40%～65%RH</div>";
+  html += "</div>";
+
+  //空气质量
+  html += "<div class='item'>";
+  html += "<div class='row-top'>";
+  html += "<div class='item-left'><span class='icon'>🍃</span><span>空气质量</span></div>";
+  html += "<div class='item-right'>" + air_level + "</div>";
+  html += "</div>";
+  html += "<div class='desc'>质量等级：优→良→中→差→严重污染</div>";
+  html += "</div>";
+
+  //CO2 二氧化碳
+  html += "<div class='item'>";
+  html += "<div class='row-top'>";
+  html += "<div class='item-left'><span class='icon'>🫧</span><span>CO₂</span></div>";
+  html += "<div class='item-right'>" + String(co2) + " ppm";
+  if(co2 <=600)      html += "<span class='tag tag-excel'>优</span>";
+  else if(co2 <=1000)html += "<span class='tag tag-good'>良</span>";
+  else if(co2 <=1500)html += "<span class='tag tag-mid'>中</span>";
+  else                html += "<span class='tag tag-bad'>差</span>";
+  html += "</div></div>";
+  html += "<div class='desc'>正常参考：400～1000ppm</div>";
+  html += "</div>";
+
+  //TVOC总挥发性有机气体
+  html += "<div class='item'>";
+  html += "<div class='row-top'>";
+  html += "<div class='item-left'><span class='icon'>🧪</span><span>TVOC总挥发性有机气体</span></div>";
+  html += "<div class='item-right'>" + String(tvoc) + " ppb";
+  if(tvoc <=50)      html += "<span class='tag tag-excel'>优</span>";
+  else if(tvoc <=100)html += "<span class='tag tag-good'>良</span>";
+  else if(tvoc <=200)html += "<span class='tag tag-mid'>中</span>";
+  else                html += "<span class='tag tag-bad'>差</span>";
+  html += "</div></div>";
+  html += "<div class='desc'>甲醛、苯、装修挥发气体总称，正常参考：0～100ppb</div>";
+  html += "</div>";
+
+
+  html += "<div class='item'>";
+  html += "<div class='row-top'>";
+  html += "<div class='item-left'><span class='icon'>🌪️</span><span>气压</span></div>";
+  html += "<div class='item-right'>" + String(pressure,1) + " hPa";
+  if(pressure>=980 && pressure<=1030){
+    html += "<span class='tag tag-excel'>正常</span>";
+  }else if(pressure < 980){
+    html += "<span class='tag tag-mid'>偏低</span>";
+  }else{
+    html += "<span class='tag tag-mid'>偏高</span>";
+  }
+  html += "</div></div>";
+  html += "<div class='desc'>标准常压参考：980～1030hPa</div>";
+  html += "</div>";
+
+  //海拔
+  html += "<div class='item'>";
+  html += "<div class='row-top'>";
+  html += "<div class='item-left'><span class='icon'>⛰️</span><span>海拔</span></div>";
+  html += "<div class='item-right'>" + String(altitude,1) + " m</div>";
+  html += "</div>";
+  html += "</div>";
+
+  html += "</div>";
+  //IP+域名栏
   html += "<div class='ip-bar'>IP：" + WiFi.localIP().toString() + "  &nbsp;&nbsp; 域名：esp32weather.local</div>";
-
-  // 🔥 WiFi + MQTT 同行小字（已放在这里）
+  //WiFi MQTT状态小字
   html += "<div class='status-bar'>";
   html += "WiFi：";
   html += wifi_connected ? "<span class='wifi-online'>已连接</span>" : "<span class='wifi-offline'>断开</span>";
@@ -227,7 +312,8 @@ void handleRoot() {
   html += "MQTT：";
   html += mqtt.connected() ? "<span class='mqtt-online'>已连接</span>" : "<span class='mqtt-offline'>未连接</span>";
   html += "</div>";
-  html += "</div></div></body></html>";
+
+  html += "</div></body></html>";
   server.send(200, "text/html", html);
 }
 // ===================== 读取传感器（完全不动） =====================
