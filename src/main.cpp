@@ -491,7 +491,7 @@ void handleRoot()
   html += "<div class='mid'><div class='vv'><span id='vPress'>--</span><span class='uu'>hPa</span></div></div>";
   html += "<div class='rw'><span class='tg tg-n' id='tPress'>--</span>";
   html += "<span class='rng'>本站常压 " + String(pressLo, 0) + "~" + String(pressHi, 0)
-       + " hPa（校本部海拔 " + String(LOCAL_ALTITUDE, 0) + " m 折算）</span></div></div>";
+       + " hPa（当前海拔 " + String(LOCAL_ALTITUDE, 0) + " m 折算）</span></div></div>";
 
   html += "<div class='sm sl-gray' id='cAlt' onclick='go(\"alt\")'>";
   html += "<div class='hd'><span class='nm'>海拔</span><span class='ic'>⛰️</span></div>";
@@ -556,6 +556,16 @@ void handleRoot()
   html += " const w=d.wifi===1,m=d.mqtt===1;";
   html += " S('sW',w?'已连接':'未连接');C('dW',w?'dot d-on':'dot d-off');";
   html += " S('sM',m?'已连接':'未连接');C('dM',m?'dot d-on':'dot d-off');";
+  
+  // 若断网实验中，网页与显示端表现一致不实时传输数据（一关流量，MQTT断，数据传输不出去），
+  html += " if(!m){";
+  html += "  ['vTemp','vHum','vCO2','vRain','vTVOC','vPress','vAlt'].forEach(function(i){S(i,'--');});";
+  html += "  ['tTemp','tHum','tCO2','tRain','tTVOC','tPress','tAlt'].forEach(function(i){S(i,'传输中断');});";
+  html += "  ['cTemp','cHum','cCO2','cRain'].forEach(function(i){C(i,'big bg-gray');});";
+  html += "  ['cTVOC','cPress','cAlt'].forEach(function(i){C(i,'sm sl-gray');});";
+  html += "  S('aEm','⚠️');S('aTx','网络中断，数据无法传输出去');C('advBar','adv adv-r');";
+  html += "  S('aSeg','采集仍在继续，但传不出去');";
+  html += "  P=d;return;}";
 
   // 顶部建议条
   html += " const a=advice(d);S('aEm',a[0]);S('aTx',a[1]);C('advBar','adv '+a[2]);";
